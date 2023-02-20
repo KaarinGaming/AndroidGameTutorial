@@ -20,7 +20,6 @@ public class GameLoop implements Runnable {
         long nanoSec = 1_000_000_000;
 
         while (true) {
-
             long nowDelta = System.nanoTime();
             double timeSinceLastDelta = nowDelta - lastDelta;
             double delta = timeSinceLastDelta / nanoSec;
