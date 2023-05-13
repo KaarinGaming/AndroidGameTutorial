@@ -13,7 +13,7 @@
         android:theme="@style/Theme.AndroidGameTutorial"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:screenOrientation="landscape"
             android:exported="true">
             <intent-filter>

@@ -1,12 +1,12 @@
-package com.tutorial.androidgametutorial;
+package com.tutorial.androidgametutorial.main;
 
 public class GameLoop implements Runnable {
 
     private Thread gameThread;
-    private GamePanel gamePanel;
+    private Game game;
 
-    public GameLoop(GamePanel gamePanel) {
-        this.gamePanel = gamePanel;
+    public GameLoop(Game game) {
+        this.game = game;
         gameThread = new Thread(this);
     }
 
@@ -24,12 +24,11 @@ public class GameLoop implements Runnable {
             double timeSinceLastDelta = nowDelta - lastDelta;
             double delta = timeSinceLastDelta / nanoSec;
 
-            gamePanel.update(delta);
-            gamePanel.render();
+            game.update(delta);
+            game.render();
             lastDelta = nowDelta;
 
 //            fps++;
-//
 //            long now = System.currentTimeMillis();
 //            if (now - lastFPScheck >= 1000) {
 //                System.out.println("FPS: " + fps);

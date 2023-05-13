@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 
-import com.tutorial.androidgametutorial.MainActivity;
+import com.tutorial.androidgametutorial.main.MainActivity;
 import com.tutorial.androidgametutorial.R;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.interfaces.BitmapMethods;

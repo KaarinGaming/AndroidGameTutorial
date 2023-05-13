@@ -1,7 +1,7 @@
 package com.tutorial.androidgametutorial.entities;
 
-import static com.tutorial.androidgametutorial.MainActivity.GAME_HEIGHT;
-import static com.tutorial.androidgametutorial.MainActivity.GAME_WIDTH;
+import static com.tutorial.androidgametutorial.main.MainActivity.GAME_HEIGHT;
+import static com.tutorial.androidgametutorial.main.MainActivity.GAME_WIDTH;
 
 import android.graphics.PointF;
 
