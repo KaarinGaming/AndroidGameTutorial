@@ -3,25 +3,22 @@ package com.tutorial.androidgametutorial.ui;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.view.MotionEvent;
 
 import com.tutorial.androidgametutorial.gamestates.Playing;
-import com.tutorial.androidgametutorial.main.Game;
 
 public class PlayingUI {
 
     //For UI
-
     private final PointF joystickCenterPos = new PointF(250, 800);
     private final PointF attackBtnCenterPos = new PointF(1700, 800);
     private final float radius = 150;
     private final Paint circlePaint;
 
-
     //For Multitouch
     private int joystickPointerId = -1;
+    private int attackBtnPointerId = -1;
     private boolean touchDown;
 
     private CustomButton btnMenu;
@@ -74,7 +71,6 @@ public class PlayingUI {
             joystickPointerId = pointerId;
             return true;
         }
-
         return false;
     }
 
@@ -93,9 +89,12 @@ public class PlayingUI {
             case MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 if (checkInsideJoyStick(eventPos, pointerId))
                     touchDown = true;
-                else if (checkInsideAttackBtn(eventPos))
-                    spawnSkeleton();
-                else {
+                else if (checkInsideAttackBtn(eventPos)) {
+                    if (attackBtnPointerId < 0) {
+                        playing.setAttacking(true);
+                        attackBtnPointerId = pointerId;
+                    }
+                } else {
                     if (isIn(eventPos, btnMenu))
                         btnMenu.setPushed(true, pointerId);
                 }
@@ -121,6 +120,10 @@ public class PlayingUI {
                             playing.setGameStateToMenu();
                         }
                     btnMenu.unPush(pointerId);
+                    if (pointerId == attackBtnPointerId) {
+                        playing.setAttacking(false);
+                        attackBtnPointerId = -1;
+                    }
                 }
             }
         }
