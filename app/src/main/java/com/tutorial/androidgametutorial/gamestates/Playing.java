@@ -172,8 +172,8 @@ public class Playing extends BaseState implements GameStateInterface {
     private void drawPlayer(Canvas c) {
         c.drawBitmap(
                 player.getGameCharType().getSprite(getAniIndex(), player.getFaceDir()),
-                player.getHitbox().left,
-                player.getHitbox().top,
+                player.getHitbox().left - GameConstants.Sprite.X_DRAW_OFFSET,
+                player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET,
                 null);
 
         c.drawRect(player.getHitbox(), redPaint);
@@ -227,8 +227,8 @@ public class Playing extends BaseState implements GameStateInterface {
     public void drawCharacter(Canvas canvas, Character c) {
         canvas.drawBitmap(
                 c.getGameCharType().getSprite(c.getAniIndex(), c.getFaceDir()),
-                c.getHitbox().left + cameraX,
-                c.getHitbox().top + cameraY,
+                c.getHitbox().left + cameraX - GameConstants.Sprite.X_DRAW_OFFSET,
+                c.getHitbox().top + cameraY - GameConstants.Sprite.Y_DRAW_OFFSET,
                 null);
 
         canvas.drawRect(c.getHitbox().left + cameraX, c.getHitbox().top + cameraY, c.getHitbox().right + cameraX,
