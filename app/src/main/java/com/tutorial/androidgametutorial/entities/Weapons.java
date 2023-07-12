@@ -9,7 +9,8 @@ import com.tutorial.androidgametutorial.main.MainActivity;
 
 public enum Weapons implements BitmapMethods {
 
-    BIG_SWORD(R.drawable.big_sword);
+    BIG_SWORD(R.drawable.big_sword),
+    SHADOW(R.drawable.shadow);
 
     final Bitmap weaponImg;
 

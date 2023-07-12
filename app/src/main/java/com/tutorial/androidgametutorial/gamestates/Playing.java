@@ -1,5 +1,8 @@
 package com.tutorial.androidgametutorial.gamestates;
 
+import static com.tutorial.androidgametutorial.helpers.GameConstants.Sprite.X_DRAW_OFFSET;
+import static com.tutorial.androidgametutorial.helpers.GameConstants.Sprite.Y_DRAW_OFFSET;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -69,13 +72,11 @@ public class Playing extends BaseState implements GameStateInterface {
         player.update(delta, movePlayer);
         updateWepHitbox();
 
-        if (attacking) if (!attackChecked)
-            checkAttack();
+        if (attacking) if (!attackChecked) checkAttack();
 
 
         for (Skeleton skeleton : skeletons)
-            if (skeleton.isActive())
-                skeleton.update(delta);
+            if (skeleton.isActive()) skeleton.update(delta);
 
         mapManager.setCameraValues(cameraX, cameraY);
     }
@@ -137,19 +138,16 @@ public class Playing extends BaseState implements GameStateInterface {
         return switch (player.getFaceDir()) {
 
             case GameConstants.Face_Dir.UP ->
-                    new PointF(player.getHitbox().left + 1.75f * GameConstants.Sprite.SCALE_MULTIPLIER,
-                            player.getHitbox().top - Weapons.BIG_SWORD.getHeight());
+                    new PointF(player.getHitbox().left - 0.5f * GameConstants.Sprite.SCALE_MULTIPLIER, player.getHitbox().top - Weapons.BIG_SWORD.getHeight() - Y_DRAW_OFFSET);
 
             case GameConstants.Face_Dir.DOWN ->
-                    new PointF(player.getHitbox().left + 2.5f * GameConstants.Sprite.SCALE_MULTIPLIER,
-                            player.getHitbox().bottom);
+                    new PointF(player.getHitbox().left + 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER, player.getHitbox().bottom);
 
             case GameConstants.Face_Dir.LEFT ->
-                    new PointF(player.getHitbox().left - Weapons.BIG_SWORD.getHeight(),
-                            player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
+                    new PointF(player.getHitbox().left - Weapons.BIG_SWORD.getHeight() - X_DRAW_OFFSET, player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
 
-            case GameConstants.Face_Dir.RIGHT -> new PointF(player.getHitbox().right,
-                    player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
+            case GameConstants.Face_Dir.RIGHT ->
+                    new PointF(player.getHitbox().right + X_DRAW_OFFSET, player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
 
             default -> throw new IllegalStateException("Unexpected value: " + player.getFaceDir());
         };
@@ -162,24 +160,21 @@ public class Playing extends BaseState implements GameStateInterface {
         drawPlayer(c);
 
         for (Skeleton skeleton : skeletons)
-            if (skeleton.isActive())
-                drawCharacter(c, skeleton);
+            if (skeleton.isActive()) drawCharacter(c, skeleton);
 
         playingUI.draw(c);
     }
 
 
     private void drawPlayer(Canvas c) {
-        c.drawBitmap(
-                player.getGameCharType().getSprite(getAniIndex(), player.getFaceDir()),
-                player.getHitbox().left - GameConstants.Sprite.X_DRAW_OFFSET,
-                player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET,
-                null);
 
-        c.drawRect(player.getHitbox(), redPaint);
+        c.drawBitmap(Weapons.SHADOW.getWeaponImg(), player.getHitbox().left, player.getHitbox().bottom - 5 * GameConstants.Sprite.SCALE_MULTIPLIER, null);
 
-        if (attacking)
-            drawWeapon(c);
+        c.drawBitmap(player.getGameCharType().getSprite(getAniIndex(), player.getFaceDir()), player.getHitbox().left - X_DRAW_OFFSET, player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET, null);
+
+//        c.drawRect(player.getHitbox(), redPaint);
+
+        if (attacking) drawWeapon(c);
     }
 
     private int getAniIndex() {
@@ -190,8 +185,7 @@ public class Playing extends BaseState implements GameStateInterface {
     private void drawWeapon(Canvas c) {
         c.rotate(getWepRot(), attackBox.left, attackBox.top);
 
-        c.drawBitmap(Weapons.BIG_SWORD.getWeaponImg(), attackBox.left + wepRotAdjustLeft(),
-                attackBox.top + wepRotAdjustTop(), null);
+        c.drawBitmap(Weapons.BIG_SWORD.getWeaponImg(), attackBox.left + wepRotAdjustLeft(), attackBox.top + wepRotAdjustTop(), null);
 
         c.rotate(getWepRot() * -1, attackBox.left, attackBox.top);
 
@@ -225,19 +219,16 @@ public class Playing extends BaseState implements GameStateInterface {
     }
 
     public void drawCharacter(Canvas canvas, Character c) {
-        canvas.drawBitmap(
-                c.getGameCharType().getSprite(c.getAniIndex(), c.getFaceDir()),
-                c.getHitbox().left + cameraX - GameConstants.Sprite.X_DRAW_OFFSET,
-                c.getHitbox().top + cameraY - GameConstants.Sprite.Y_DRAW_OFFSET,
-                null);
+        canvas.drawBitmap(Weapons.SHADOW.getWeaponImg(), c.getHitbox().left + cameraX, c.getHitbox().bottom - 5 * GameConstants.Sprite.SCALE_MULTIPLIER + cameraY, null);
 
-        canvas.drawRect(c.getHitbox().left + cameraX, c.getHitbox().top + cameraY, c.getHitbox().right + cameraX,
-                c.getHitbox().bottom + cameraY, redPaint);
+
+        canvas.drawBitmap(c.getGameCharType().getSprite(c.getAniIndex(), c.getFaceDir()), c.getHitbox().left + cameraX - X_DRAW_OFFSET, c.getHitbox().top + cameraY - GameConstants.Sprite.Y_DRAW_OFFSET, null);
+
+//        canvas.drawRect(c.getHitbox().left + cameraX, c.getHitbox().top + cameraY, c.getHitbox().right + cameraX, c.getHitbox().bottom + cameraY, redPaint);
     }
 
     private void updatePlayerMove(double delta) {
-        if (!movePlayer)
-            return;
+        if (!movePlayer) return;
 
         float baseSpeed = (float) (delta * 300);
         float ratio = Math.abs(lastTouchDiff.y) / Math.abs(lastTouchDiff.x);
@@ -254,18 +245,14 @@ public class Playing extends BaseState implements GameStateInterface {
             else player.setFaceDir(GameConstants.Face_Dir.UP);
         }
 
-        if (lastTouchDiff.x < 0)
-            xSpeed *= -1;
-        if (lastTouchDiff.y < 0)
-            ySpeed *= -1;
+        if (lastTouchDiff.x < 0) xSpeed *= -1;
+        if (lastTouchDiff.y < 0) ySpeed *= -1;
 
         int pWidth = GameConstants.Sprite.SIZE;
         int pHeight = GameConstants.Sprite.SIZE;
 
-        if (xSpeed <= 0)
-            pWidth = 0;
-        if (ySpeed <= 0)
-            pHeight = 0;
+        if (xSpeed <= 0) pWidth = 0;
+        if (ySpeed <= 0) pHeight = 0;
 
 
         float deltaX = xSpeed * baseSpeed * -1;
@@ -299,7 +286,6 @@ public class Playing extends BaseState implements GameStateInterface {
 
     public void setAttacking(boolean attacking) {
         this.attacking = attacking;
-        if (!attacking)
-            attackChecked = false;
+        if (!attacking) attackChecked = false;
     }
 }
