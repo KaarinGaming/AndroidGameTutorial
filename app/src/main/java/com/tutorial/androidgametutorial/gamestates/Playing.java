@@ -10,6 +10,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
+import com.tutorial.androidgametutorial.entities.BuildingManager;
 import com.tutorial.androidgametutorial.entities.Character;
 import com.tutorial.androidgametutorial.entities.Player;
 import com.tutorial.androidgametutorial.entities.Weapons;
@@ -29,6 +30,7 @@ public class Playing extends BaseState implements GameStateInterface {
     private boolean movePlayer;
     private PointF lastTouchDiff;
     private MapManager mapManager;
+    private BuildingManager buildingManager;
     private Player player;
     private ArrayList<Skeleton> skeletons;
 
@@ -44,6 +46,7 @@ public class Playing extends BaseState implements GameStateInterface {
         super(game);
 
         mapManager = new MapManager();
+        buildingManager = new BuildingManager();
         player = new Player();
         skeletons = new ArrayList<>();
 
@@ -79,6 +82,7 @@ public class Playing extends BaseState implements GameStateInterface {
             if (skeleton.isActive()) skeleton.update(delta);
 
         mapManager.setCameraValues(cameraX, cameraY);
+        buildingManager.setCameraValues(cameraX, cameraY);
     }
 
     private void checkAttack() {
@@ -157,6 +161,7 @@ public class Playing extends BaseState implements GameStateInterface {
     @Override
     public void render(Canvas c) {
         mapManager.draw(c);
+        buildingManager.draw(c);
         drawPlayer(c);
 
         for (Skeleton skeleton : skeletons)
