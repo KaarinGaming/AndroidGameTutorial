@@ -11,12 +11,8 @@ public class BuildingManager {
     private float cameraX, cameraY;
 
     public BuildingManager() {
-
         buildingArrayList = new ArrayList<>();
         buildingArrayList.add(new Building(new PointF(200, 200), Buildings.HOUSE_ONE));
-
-
-
     }
 
     public void setCameraValues(float cameraX, float cameraY) {

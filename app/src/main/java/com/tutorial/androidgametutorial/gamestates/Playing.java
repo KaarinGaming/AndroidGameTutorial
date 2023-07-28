@@ -2,6 +2,8 @@ package com.tutorial.androidgametutorial.gamestates;
 
 import static com.tutorial.androidgametutorial.helpers.GameConstants.Sprite.X_DRAW_OFFSET;
 import static com.tutorial.androidgametutorial.helpers.GameConstants.Sprite.Y_DRAW_OFFSET;
+import static com.tutorial.androidgametutorial.main.MainActivity.GAME_HEIGHT;
+import static com.tutorial.androidgametutorial.main.MainActivity.GAME_WIDTH;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,7 +32,7 @@ public class Playing extends BaseState implements GameStateInterface {
     private boolean movePlayer;
     private PointF lastTouchDiff;
     private MapManager mapManager;
-    private BuildingManager buildingManager;
+    //    private BuildingManager buildingManager;
     private Player player;
     private ArrayList<Skeleton> skeletons;
 
@@ -46,7 +48,8 @@ public class Playing extends BaseState implements GameStateInterface {
         super(game);
 
         mapManager = new MapManager();
-        buildingManager = new BuildingManager();
+        calcStartCameraValues();
+//        buildingManager = new BuildingManager();
         player = new Player();
         skeletons = new ArrayList<>();
 
@@ -62,6 +65,11 @@ public class Playing extends BaseState implements GameStateInterface {
 
         updateWepHitbox();
 
+    }
+
+    private void calcStartCameraValues() {
+        cameraX = GAME_WIDTH / 2 - mapManager.getMaxWidthCurrentMap() / 2;
+        cameraY = GAME_HEIGHT / 2 - mapManager.getMaxHeightCurrentMap() / 2;
     }
 
     public void spawnSkeleton() {
@@ -82,7 +90,7 @@ public class Playing extends BaseState implements GameStateInterface {
             if (skeleton.isActive()) skeleton.update(delta);
 
         mapManager.setCameraValues(cameraX, cameraY);
-        buildingManager.setCameraValues(cameraX, cameraY);
+//        buildingManager.setCameraValues(cameraX, cameraY);
     }
 
     private void checkAttack() {
@@ -161,7 +169,7 @@ public class Playing extends BaseState implements GameStateInterface {
     @Override
     public void render(Canvas c) {
         mapManager.draw(c);
-        buildingManager.draw(c);
+//        buildingManager.draw(c);
         drawPlayer(c);
 
         for (Skeleton skeleton : skeletons)
@@ -177,7 +185,7 @@ public class Playing extends BaseState implements GameStateInterface {
 
         c.drawBitmap(player.getGameCharType().getSprite(getAniIndex(), player.getFaceDir()), player.getHitbox().left - X_DRAW_OFFSET, player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET, null);
 
-//        c.drawRect(player.getHitbox(), redPaint);
+        c.drawRect(player.getHitbox(), redPaint);
 
         if (attacking) drawWeapon(c);
     }
@@ -253,8 +261,8 @@ public class Playing extends BaseState implements GameStateInterface {
         if (lastTouchDiff.x < 0) xSpeed *= -1;
         if (lastTouchDiff.y < 0) ySpeed *= -1;
 
-        int pWidth = GameConstants.Sprite.SIZE;
-        int pHeight = GameConstants.Sprite.SIZE;
+        int pWidth = (int) player.getHitbox().width();
+        int pHeight = (int) player.getHitbox().height();
 
         if (xSpeed <= 0) pWidth = 0;
         if (ySpeed <= 0) pHeight = 0;
