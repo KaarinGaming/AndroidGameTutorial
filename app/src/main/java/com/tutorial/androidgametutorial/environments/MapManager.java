@@ -2,10 +2,13 @@ package com.tutorial.androidgametutorial.environments;
 
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.graphics.RectF;
 
 import com.tutorial.androidgametutorial.entities.Building;
 import com.tutorial.androidgametutorial.entities.Buildings;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
+import com.tutorial.androidgametutorial.helpers.HelpMethods;
+import com.tutorial.androidgametutorial.main.Game;
 
 import java.util.ArrayList;
 
@@ -59,6 +62,18 @@ public class MapManager {
         drawBuildings(c);
     }
 
+    public Doorway isPlayerOnDoorway(RectF playerHitbox) {
+        for (Doorway doorway : currentMap.getDoorwayArrayList())
+            if (doorway.isPlayerInsideDoorway(playerHitbox, cameraX, cameraY))
+                return doorway;
+
+        return null;
+    }
+
+    public void changeMap(GameMap gameMap) {
+        this.currentMap = gameMap;
+    }
+
     private void initTestMap() {
 
         int[][] outsideArray = {
@@ -93,6 +108,11 @@ public class MapManager {
 
         insideMap = new GameMap(insideArray, Floor.INSIDE, null);
         outsideMap = new GameMap(outsideArray, Floor.OUTSIDE, buildingArrayList);
-        currentMap = insideMap;
+
+
+        HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);
+
+
+        currentMap = outsideMap;
     }
 }

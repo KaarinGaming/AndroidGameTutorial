@@ -17,6 +17,7 @@ import com.tutorial.androidgametutorial.entities.Character;
 import com.tutorial.androidgametutorial.entities.Player;
 import com.tutorial.androidgametutorial.entities.Weapons;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
+import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.MapManager;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.interfaces.GameStateInterface;
@@ -81,6 +82,8 @@ public class Playing extends BaseState implements GameStateInterface {
     public void update(double delta) {
         updatePlayerMove(delta);
         player.update(delta, movePlayer);
+        mapManager.setCameraValues(cameraX, cameraY);
+        checkForDoorway();
         updateWepHitbox();
 
         if (attacking) if (!attackChecked) checkAttack();
@@ -89,8 +92,14 @@ public class Playing extends BaseState implements GameStateInterface {
         for (Skeleton skeleton : skeletons)
             if (skeleton.isActive()) skeleton.update(delta);
 
-        mapManager.setCameraValues(cameraX, cameraY);
-//        buildingManager.setCameraValues(cameraX, cameraY);
+
+    }
+
+    private void checkForDoorway() {
+        Doorway doorwayPlayerIsOn = mapManager.isPlayerOnDoorway(player.getHitbox());
+
+        if (doorwayPlayerIsOn != null)
+            mapManager.changeMap(doorwayPlayerIsOn.getGameMap());
     }
 
     private void checkAttack() {
