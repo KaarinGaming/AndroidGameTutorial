@@ -8,7 +8,6 @@ import com.tutorial.androidgametutorial.entities.Building;
 import com.tutorial.androidgametutorial.entities.Buildings;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.HelpMethods;
-import com.tutorial.androidgametutorial.main.Game;
 
 import java.util.ArrayList;
 
@@ -96,18 +95,20 @@ public class MapManager {
         };
 
         int[][] insideArray = {
-                {0, 1, 1, 1, 2},
-                {22, 23, 23, 23, 24},
-                {22, 23, 23, 23, 24},
-                {22, 23, 23, 23, 24},
-                {44, 45, 45, 45, 46}
+                {374, 377, 377, 377, 377, 377, 378},
+                {396,   0,   1,   1,   1,   2, 400},
+                {396,  22,  23,  23,  23,  24, 400},
+                {396,  22,  23,  23,  23,  24, 400},
+                {396,  22,  23,  23,  23,  24, 400},
+                {396,  44,  45,  45,  45,  46, 400},
+                {462, 465, 463, 394, 464, 465, 466}
         };
 
         ArrayList<Building> buildingArrayList = new ArrayList<>();
         buildingArrayList.add(new Building(new PointF(200, 200), Buildings.HOUSE_ONE));
 
-        insideMap = new GameMap(insideArray, Floor.INSIDE, null);
-        outsideMap = new GameMap(outsideArray, Floor.OUTSIDE, buildingArrayList);
+        insideMap = new GameMap(insideArray, Tiles.INSIDE, null);
+        outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList);
 
 
         HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);
