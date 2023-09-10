@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public class GameMap {
 
     private int[][] spriteIds;
-    private Tiles tilesType;
+    private Floor floorType;
     private ArrayList<Building> buildingArrayList;
     private ArrayList<Doorway> doorwayArrayList;
 
-    public GameMap(int[][] spriteIds, Tiles tilesType, ArrayList<Building> buildingArrayList) {
+    public GameMap(int[][] spriteIds, Floor floorType, ArrayList<Building> buildingArrayList) {
         this.spriteIds = spriteIds;
-        this.tilesType = tilesType;
+        this.floorType = floorType;
         this.buildingArrayList = buildingArrayList;
         this.doorwayArrayList = new ArrayList<>();
     }
@@ -32,8 +32,8 @@ public class GameMap {
         return buildingArrayList;
     }
 
-    public Tiles getFloorType() {
-        return tilesType;
+    public Floor getFloorType() {
+        return floorType;
     }
 
     public int getSpriteID(int xIndex, int yIndex) {
