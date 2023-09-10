@@ -14,8 +14,7 @@ public class Doorway {
     }
 
     public boolean isPlayerInsideDoorway(RectF playerHitbox, float cameraX, float cameraY) {
-        System.out.println(playerHitbox.left);
-        System.out.println(hitbox.left + cameraX);
+
 
         return playerHitbox.intersects(hitbox.left + cameraX, hitbox.top + cameraY, hitbox.right + cameraX, hitbox.bottom + cameraY);
     }
