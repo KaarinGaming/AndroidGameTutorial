@@ -12,7 +12,6 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
-import com.tutorial.androidgametutorial.entities.BuildingManager;
 import com.tutorial.androidgametutorial.entities.Character;
 import com.tutorial.androidgametutorial.entities.Player;
 import com.tutorial.androidgametutorial.entities.Weapons;
@@ -22,8 +21,6 @@ import com.tutorial.androidgametutorial.environments.MapManager;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.interfaces.GameStateInterface;
 import com.tutorial.androidgametutorial.main.Game;
-import com.tutorial.androidgametutorial.ui.ButtonImages;
-import com.tutorial.androidgametutorial.ui.CustomButton;
 import com.tutorial.androidgametutorial.ui.PlayingUI;
 
 import java.util.ArrayList;
@@ -45,10 +42,12 @@ public class Playing extends BaseState implements GameStateInterface {
 
     private boolean attacking, attackChecked;
 
+    private boolean doorwayJustPassed;
+
     public Playing(Game game) {
         super(game);
 
-        mapManager = new MapManager();
+        mapManager = new MapManager(this);
         calcStartCameraValues();
 //        buildingManager = new BuildingManager();
         player = new Player();
@@ -95,11 +94,24 @@ public class Playing extends BaseState implements GameStateInterface {
 
     }
 
+    public void setCameraValues(PointF cameraPos) {
+        this.cameraX = cameraPos.x;
+        this.cameraY = cameraPos.y;
+    }
+
     private void checkForDoorway() {
         Doorway doorwayPlayerIsOn = mapManager.isPlayerOnDoorway(player.getHitbox());
 
-        if (doorwayPlayerIsOn != null)
-            mapManager.changeMap(doorwayPlayerIsOn.getGameMap());
+        if (doorwayPlayerIsOn != null) {
+            if (!doorwayJustPassed)
+                mapManager.changeMap(doorwayPlayerIsOn.getDoorwayConnectedTo());
+        } else
+            doorwayJustPassed = false;
+
+    }
+
+    public void setDoorwayJustPassed(boolean doorwayJustPassed) {
+        this.doorwayJustPassed = doorwayJustPassed;
     }
 
     private void checkAttack() {
