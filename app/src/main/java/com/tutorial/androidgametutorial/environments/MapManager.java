@@ -87,6 +87,10 @@ public class MapManager {
         playing.setDoorwayJustPassed(true);
     }
 
+    public GameMap getCurrentMap() {
+        return currentMap;
+    }
+
     private void initTestMap() {
 
         int[][] outsideArray = {
@@ -121,8 +125,8 @@ public class MapManager {
         ArrayList<Building> buildingArrayList = new ArrayList<>();
         buildingArrayList.add(new Building(new PointF(200, 200), Buildings.HOUSE_ONE));
 
-        insideMap = new GameMap(insideArray, Tiles.INSIDE, null);
-        outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList);
+        insideMap = new GameMap(insideArray, Tiles.INSIDE, null, HelpMethods.GetSkeletonsRandomized(2, insideArray));
+        outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList, HelpMethods.GetSkeletonsRandomized(5, outsideArray));
 
 
 //        HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);

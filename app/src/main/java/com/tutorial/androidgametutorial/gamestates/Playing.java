@@ -32,7 +32,7 @@ public class Playing extends BaseState implements GameStateInterface {
     private MapManager mapManager;
     //    private BuildingManager buildingManager;
     private Player player;
-    private ArrayList<Skeleton> skeletons;
+//    private ArrayList<Skeleton> skeletons;
 
     private PlayingUI playingUI;
 
@@ -51,7 +51,7 @@ public class Playing extends BaseState implements GameStateInterface {
         calcStartCameraValues();
 //        buildingManager = new BuildingManager();
         player = new Player();
-        skeletons = new ArrayList<>();
+//        skeletons = new ArrayList<>();
 
         playingUI = new PlayingUI(this);
 
@@ -59,9 +59,9 @@ public class Playing extends BaseState implements GameStateInterface {
         redPaint.setStrokeWidth(1);
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
-
-        for (int i = 0; i < 5; i++)
-            spawnSkeleton();
+//
+//        for (int i = 0; i < 5; i++)
+//            spawnSkeleton();
 
         updateWepHitbox();
 
@@ -72,10 +72,10 @@ public class Playing extends BaseState implements GameStateInterface {
         cameraY = GAME_HEIGHT / 2 - mapManager.getMaxHeightCurrentMap() / 2;
     }
 
-    public void spawnSkeleton() {
-        skeletons.add(new Skeleton(new PointF(player.getHitbox().left - cameraX, player.getHitbox().top - cameraY)));
-
-    }
+//    public void spawnSkeleton() {
+//        skeletons.add(new Skeleton(new PointF(player.getHitbox().left - cameraX, player.getHitbox().top - cameraY)));
+//
+//    }
 
     @Override
     public void update(double delta) {
@@ -88,8 +88,8 @@ public class Playing extends BaseState implements GameStateInterface {
         if (attacking) if (!attackChecked) checkAttack();
 
 
-        for (Skeleton skeleton : skeletons)
-            if (skeleton.isActive()) skeleton.update(delta);
+        for (Skeleton skeleton : mapManager.getCurrentMap().getSkeletonArrayList())
+            if (skeleton.isActive()) skeleton.update(delta,mapManager.getCurrentMap());
 
 
     }
@@ -122,7 +122,7 @@ public class Playing extends BaseState implements GameStateInterface {
         attackBoxWithoutCamera.right -= cameraX;
         attackBoxWithoutCamera.bottom -= cameraY;
 
-        for (Skeleton s : skeletons)
+        for (Skeleton s : mapManager.getCurrentMap().getSkeletonArrayList())
             if (attackBoxWithoutCamera.intersects(s.getHitbox().left, s.getHitbox().top, s.getHitbox().right, s.getHitbox().bottom))
                 s.setActive(false);
 
@@ -193,7 +193,7 @@ public class Playing extends BaseState implements GameStateInterface {
 //        buildingManager.draw(c);
         drawPlayer(c);
 
-        for (Skeleton skeleton : skeletons)
+        for (Skeleton skeleton : mapManager.getCurrentMap().getSkeletonArrayList())
             if (skeleton.isActive()) drawCharacter(c, skeleton);
 
         playingUI.draw(c);

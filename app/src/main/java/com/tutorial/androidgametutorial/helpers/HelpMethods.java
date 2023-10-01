@@ -1,10 +1,14 @@
 package com.tutorial.androidgametutorial.helpers;
 
+import android.graphics.PointF;
 import android.graphics.RectF;
 
 import com.tutorial.androidgametutorial.entities.Building;
+import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.GameMap;
+
+import java.util.ArrayList;
 
 public class HelpMethods {
 
@@ -45,5 +49,24 @@ public class HelpMethods {
 
         doorwayOne.connectDoorway(doorwayTwo);
         doorwayTwo.connectDoorway(doorwayOne);
+    }
+
+
+    public static ArrayList<Skeleton> GetSkeletonsRandomized(int amount, int[][] gameMapArray) {
+
+        int width = (gameMapArray[0].length - 1) * GameConstants.Sprite.SIZE;
+        int height = (gameMapArray.length - 1) * GameConstants.Sprite.SIZE;
+
+        ArrayList<Skeleton> skeletonArrayList = new ArrayList<>();
+
+        for (int i = 0; i < amount; i++) {
+            float x = (float) (Math.random() * width);
+            float y = (float) (Math.random() * height);
+            skeletonArrayList.add(new Skeleton(new PointF(x, y)));
+        }
+
+
+        return skeletonArrayList;
+
     }
 }

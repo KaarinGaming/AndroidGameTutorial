@@ -74,9 +74,6 @@ public class PlayingUI {
         return false;
     }
 
-    private void spawnSkeleton() {
-        playing.spawnSkeleton();
-    }
 
     public void touchEvents(MotionEvent event) {
         final int action = event.getActionMasked();
