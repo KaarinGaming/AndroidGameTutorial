@@ -7,6 +7,7 @@ import com.tutorial.androidgametutorial.entities.Building;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.GameMap;
+import com.tutorial.androidgametutorial.environments.Tiles;
 
 import java.util.ArrayList;
 
@@ -68,5 +69,27 @@ public class HelpMethods {
 
         return skeletonArrayList;
 
+    }
+
+    public static boolean CanWalkHere(float x, float y, GameMap gameMap) {
+        if (x < 0 || y < 0)
+            return false;
+
+        if (x >= gameMap.getMapWidth() || y >= gameMap.getMapHeight())
+            return false;
+
+        int tileX = (int) (x / GameConstants.Sprite.SIZE);
+        int tileY = (int) (y / GameConstants.Sprite.SIZE);
+
+        int tileId = gameMap.getSpriteID(tileX, tileY);
+
+        return IsTileWalkable(tileId,gameMap.getFloorType());
+    }
+
+    public static boolean IsTileWalkable(int tileId, Tiles tilesType) {
+        if (tilesType == Tiles.INSIDE)
+            return (tileId == 394 || tileId < 374);
+
+        return true;
     }
 }

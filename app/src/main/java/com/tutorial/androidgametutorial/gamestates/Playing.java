@@ -19,6 +19,7 @@ import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.MapManager;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
+import com.tutorial.androidgametutorial.helpers.HelpMethods;
 import com.tutorial.androidgametutorial.helpers.interfaces.GameStateInterface;
 import com.tutorial.androidgametutorial.main.Game;
 import com.tutorial.androidgametutorial.ui.PlayingUI;
@@ -292,10 +293,19 @@ public class Playing extends BaseState implements GameStateInterface {
         float deltaX = xSpeed * baseSpeed * -1;
         float deltaY = ySpeed * baseSpeed * -1;
 
-        if (mapManager.canMoveHere(player.getHitbox().left + cameraX * -1 + deltaX * -1 + pWidth, player.getHitbox().top + cameraY * -1 + deltaY * -1 + pHeight)) {
+        float xPosToCheck = player.getHitbox().left + cameraX * -1 + deltaX * -1 + pWidth;
+        float yPosToCheck = player.getHitbox().top + cameraY * -1 + deltaY * -1 + pHeight;
+
+        if(HelpMethods.CanWalkHere(xPosToCheck,yPosToCheck,mapManager.getCurrentMap())){
             cameraX += deltaX;
             cameraY += deltaY;
         }
+
+
+//        if (mapManager.canMoveHere(player.getHitbox().left + cameraX * -1 + deltaX * -1 + pWidth, player.getHitbox().top + cameraY * -1 + deltaY * -1 + pHeight)) {
+//            cameraX += deltaX;
+//            cameraY += deltaY;
+//        }
     }
 
     public void setGameStateToMenu() {
