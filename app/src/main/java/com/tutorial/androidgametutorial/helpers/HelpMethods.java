@@ -1,5 +1,6 @@
 package com.tutorial.androidgametutorial.helpers;
 
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
@@ -8,6 +9,7 @@ import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.GameMap;
 import com.tutorial.androidgametutorial.environments.Tiles;
+import com.tutorial.androidgametutorial.main.Game;
 
 import java.util.ArrayList;
 
@@ -83,7 +85,54 @@ public class HelpMethods {
 
         int tileId = gameMap.getSpriteID(tileX, tileY);
 
-        return IsTileWalkable(tileId,gameMap.getFloorType());
+        return IsTileWalkable(tileId, gameMap.getFloorType());
+    }
+
+    public static boolean CanWalkHere(RectF hitbox, float deltaX, float deltaY, GameMap gameMap) {
+        if (hitbox.left + deltaX < 0 || hitbox.top + deltaY < 0)
+            return false;
+        else if (hitbox.right + deltaX >= gameMap.getMapWidth())
+            return false;
+        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight())
+            return false;
+
+        Point[] tileCords = GetTileCords(hitbox, deltaX, deltaY);
+        int[] tileIds = GetTileIds(tileCords, gameMap);
+
+        return IsTilesWalkable(tileIds, gameMap.getFloorType());
+    }
+
+    private static int[] GetTileIds(Point[] tileCords, GameMap gameMap) {
+        int[] tileIds = new int[4];
+
+        for (int i = 0; i < tileCords.length; i++)
+            tileIds[i] = gameMap.getSpriteID(tileCords[i].x, tileCords[i].y);
+
+        return tileIds;
+    }
+
+    private static Point[] GetTileCords(RectF hitbox, float deltaX, float deltaY) {
+        Point[] tileCords = new Point[4];
+
+        int left = (int) ((hitbox.left + deltaX) / GameConstants.Sprite.SIZE);
+        int right = (int) ((hitbox.right + deltaX) / GameConstants.Sprite.SIZE);
+        int top = (int) ((hitbox.top + deltaY) / GameConstants.Sprite.SIZE);
+        int bottom = (int) ((hitbox.bottom + deltaY) / GameConstants.Sprite.SIZE);
+
+        tileCords[0] = new Point(left, top);
+        tileCords[1] = new Point(right, top);
+        tileCords[2] = new Point(left, bottom);
+        tileCords[3] = new Point(right, bottom);
+
+        return tileCords;
+
+    }
+
+    public static boolean IsTilesWalkable(int[] tileIds, Tiles tilesType) {
+        for (int i : tileIds)
+            if (!(IsTileWalkable(i, tilesType)))
+                return false;
+        return true;
     }
 
     public static boolean IsTileWalkable(int tileId, Tiles tilesType) {

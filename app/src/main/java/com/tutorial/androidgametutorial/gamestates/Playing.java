@@ -90,7 +90,7 @@ public class Playing extends BaseState implements GameStateInterface {
 
 
         for (Skeleton skeleton : mapManager.getCurrentMap().getSkeletonArrayList())
-            if (skeleton.isActive()) skeleton.update(delta,mapManager.getCurrentMap());
+            if (skeleton.isActive()) skeleton.update(delta, mapManager.getCurrentMap());
 
 
     }
@@ -283,29 +283,16 @@ public class Playing extends BaseState implements GameStateInterface {
         if (lastTouchDiff.x < 0) xSpeed *= -1;
         if (lastTouchDiff.y < 0) ySpeed *= -1;
 
-        int pWidth = (int) player.getHitbox().width();
-        int pHeight = (int) player.getHitbox().height();
-
-        if (xSpeed <= 0) pWidth = 0;
-        if (ySpeed <= 0) pHeight = 0;
-
-
         float deltaX = xSpeed * baseSpeed * -1;
         float deltaY = ySpeed * baseSpeed * -1;
 
-        float xPosToCheck = player.getHitbox().left + cameraX * -1 + deltaX * -1 + pWidth;
-        float yPosToCheck = player.getHitbox().top + cameraY * -1 + deltaY * -1 + pHeight;
+        float deltaCameraX = cameraX * -1 + deltaX * -1;
+        float deltaCameraY = cameraY * -1 + deltaY * -1;
 
-        if(HelpMethods.CanWalkHere(xPosToCheck,yPosToCheck,mapManager.getCurrentMap())){
+        if (HelpMethods.CanWalkHere(player.getHitbox(), deltaCameraX, deltaCameraY, mapManager.getCurrentMap())) {
             cameraX += deltaX;
             cameraY += deltaY;
         }
-
-
-//        if (mapManager.canMoveHere(player.getHitbox().left + cameraX * -1 + deltaX * -1 + pWidth, player.getHitbox().top + cameraY * -1 + deltaY * -1 + pHeight)) {
-//            cameraX += deltaX;
-//            cameraY += deltaY;
-//        }
     }
 
     public void setGameStateToMenu() {
