@@ -73,6 +73,42 @@ public class HelpMethods {
 
     }
 
+    public static float MoveNextToTileUpDown(RectF hitbox, float cameraY, float deltaY) {
+        int currentTile;
+        int playerPosY;
+        float cameraYReturn;
+
+        if (deltaY > 0) {
+            playerPosY = (int) (hitbox.top - cameraY);
+            currentTile = playerPosY / GameConstants.Sprite.SIZE;
+            cameraYReturn = hitbox.top - (currentTile * GameConstants.Sprite.SIZE);
+        } else {
+            playerPosY = (int) (hitbox.bottom - cameraY);
+            currentTile = playerPosY / GameConstants.Sprite.SIZE;
+            cameraYReturn = hitbox.bottom - (currentTile * GameConstants.Sprite.SIZE) - (GameConstants.Sprite.SIZE - 1);
+        }
+
+        return cameraYReturn;
+    }
+
+    public static float MoveNextToTileLeftRight(RectF hitbox, float cameraX, float deltaX) {
+        int currentTile;
+        int playerPosX;
+        float cameraXReturn;
+
+        if (deltaX > 0) {
+            playerPosX = (int) (hitbox.left - cameraX);
+            currentTile = playerPosX / GameConstants.Sprite.SIZE;
+            cameraXReturn = hitbox.left - (currentTile * GameConstants.Sprite.SIZE);
+        } else {
+            playerPosX = (int) (hitbox.right - cameraX);
+            currentTile = playerPosX / GameConstants.Sprite.SIZE;
+            cameraXReturn = hitbox.right - (currentTile * GameConstants.Sprite.SIZE) - (GameConstants.Sprite.SIZE - 1);
+        }
+
+        return cameraXReturn;
+    }
+
     public static boolean CanWalkHere(float x, float y, GameMap gameMap) {
         if (x < 0 || y < 0)
             return false;
@@ -87,6 +123,31 @@ public class HelpMethods {
 
         return IsTileWalkable(tileId, gameMap.getFloorType());
     }
+
+    public static boolean CanWalkHereUpDown(RectF hitbox, float deltaY, float currentCameraX, GameMap gameMap) {
+        if (hitbox.top + deltaY < 0)
+            return false;
+        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight())
+            return false;
+
+        Point[] tileCords = GetTileCords(hitbox, currentCameraX, deltaY);
+        int[] tileIds = GetTileIds(tileCords, gameMap);
+
+        return IsTilesWalkable(tileIds, gameMap.getFloorType());
+    }
+
+    public static boolean CanWalkHereLeftRight(RectF hitbox, float deltaX, float currentCameraY, GameMap gameMap) {
+        if (hitbox.left + deltaX < 0)
+            return false;
+        else if (hitbox.right + deltaX >= gameMap.getMapWidth())
+            return false;
+
+        Point[] tileCords = GetTileCords(hitbox, deltaX, currentCameraY);
+        int[] tileIds = GetTileIds(tileCords, gameMap);
+
+        return IsTilesWalkable(tileIds, gameMap.getFloorType());
+    }
+
 
     public static boolean CanWalkHere(RectF hitbox, float deltaX, float deltaY, GameMap gameMap) {
         if (hitbox.left + deltaX < 0 || hitbox.top + deltaY < 0)
