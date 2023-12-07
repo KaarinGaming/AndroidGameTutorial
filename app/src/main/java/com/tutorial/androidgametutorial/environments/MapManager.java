@@ -6,6 +6,8 @@ import android.graphics.RectF;
 
 import com.tutorial.androidgametutorial.entities.Building;
 import com.tutorial.androidgametutorial.entities.Buildings;
+import com.tutorial.androidgametutorial.entities.GameObject;
+import com.tutorial.androidgametutorial.entities.GameObjects;
 import com.tutorial.androidgametutorial.gamestates.Playing;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.HelpMethods;
@@ -49,6 +51,13 @@ public class MapManager {
     }
 
 
+    private void drawObjects(Canvas c) {
+        if (currentMap.getGameObjectArrayList() != null)
+            for (GameObject go : currentMap.getGameObjectArrayList())
+                c.drawBitmap(go.getObjectType().getObjectImg(), go.getHitbox().left + cameraX, go.getHitbox().top + cameraY, null);
+
+    }
+
     public void drawBuildings(Canvas c) {
         if (currentMap.getBuildingArrayList() != null)
             for (Building b : currentMap.getBuildingArrayList())
@@ -64,7 +73,9 @@ public class MapManager {
     public void draw(Canvas c) {
         drawTiles(c);
         drawBuildings(c);
+        drawObjects(c);
     }
+
 
     public Doorway isPlayerOnDoorway(RectF playerHitbox) {
         for (Doorway doorway : currentMap.getDoorwayArrayList())
@@ -125,8 +136,19 @@ public class MapManager {
         ArrayList<Building> buildingArrayList = new ArrayList<>();
         buildingArrayList.add(new Building(new PointF(200, 200), Buildings.HOUSE_ONE));
 
-        insideMap = new GameMap(insideArray, Tiles.INSIDE, null, HelpMethods.GetSkeletonsRandomized(2, insideArray));
-        outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList, HelpMethods.GetSkeletonsRandomized(5, outsideArray));
+        ArrayList<GameObject> gameObjectArrayList = new ArrayList<>();
+        gameObjectArrayList.add(new GameObject(new PointF(600, 200), GameObjects.PILLAR_YELLOW));
+        gameObjectArrayList.add(new GameObject(new PointF(600, 400), GameObjects.STATUE_ANGRY_YELLOW));
+        gameObjectArrayList.add(new GameObject(new PointF(1000, 400), GameObjects.STATUE_ANGRY_YELLOW));
+        gameObjectArrayList.add(new GameObject(new PointF(200, 350), GameObjects.FROG_YELLOW));
+        gameObjectArrayList.add(new GameObject(new PointF(200, 550), GameObjects.FROG_GREEN));
+        gameObjectArrayList.add(new GameObject(new PointF(50, 50), GameObjects.BASKET_FULL_RED_FRUIT));
+        gameObjectArrayList.add(new GameObject(new PointF(800, 800), GameObjects.OVEN_SNOW_YELLOW));
+
+
+
+        insideMap = new GameMap(insideArray, Tiles.INSIDE, null, null, HelpMethods.GetSkeletonsRandomized(2, insideArray));
+        outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList, gameObjectArrayList, HelpMethods.GetSkeletonsRandomized(5, outsideArray));
 
 
 //        HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);

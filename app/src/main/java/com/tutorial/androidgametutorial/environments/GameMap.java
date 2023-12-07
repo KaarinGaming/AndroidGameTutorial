@@ -2,6 +2,7 @@ package com.tutorial.androidgametutorial.environments;
 
 
 import com.tutorial.androidgametutorial.entities.Building;
+import com.tutorial.androidgametutorial.entities.GameObject;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 
@@ -14,12 +15,14 @@ public class GameMap {
     private Tiles tilesType;
     private ArrayList<Building> buildingArrayList;
     private ArrayList<Doorway> doorwayArrayList;
+    private ArrayList<GameObject> gameObjectArrayList;
     private ArrayList<Skeleton> skeletonArrayList;
 
-    public GameMap(int[][] spriteIds, Tiles tilesType, ArrayList<Building> buildingArrayList, ArrayList<Skeleton> skeletonArrayList) {
+    public GameMap(int[][] spriteIds, Tiles tilesType, ArrayList<Building> buildingArrayList, ArrayList<GameObject> gameObjectArrayList, ArrayList<Skeleton> skeletonArrayList) {
         this.spriteIds = spriteIds;
         this.tilesType = tilesType;
         this.buildingArrayList = buildingArrayList;
+        this.gameObjectArrayList = gameObjectArrayList;
         this.skeletonArrayList = skeletonArrayList;
         this.doorwayArrayList = new ArrayList<>();
     }
@@ -34,6 +37,10 @@ public class GameMap {
 
     public ArrayList<Building> getBuildingArrayList() {
         return buildingArrayList;
+    }
+
+    public ArrayList<GameObject> getGameObjectArrayList() {
+        return gameObjectArrayList;
     }
 
     public ArrayList<Skeleton> getSkeletonArrayList() {
