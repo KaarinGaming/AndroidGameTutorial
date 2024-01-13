@@ -2,13 +2,12 @@ package com.tutorial.androidgametutorial.entities;
 
 import android.graphics.PointF;
 
-public class Building {
+public class Building extends Entity {
 
-    private PointF pos;
     private Buildings buildingType;
 
     public Building(PointF pos, Buildings buildingType) {
-        this.pos = pos;
+        super(pos);
         this.buildingType = buildingType;
     }
 
@@ -17,6 +16,7 @@ public class Building {
     }
 
     public PointF getPos() {
-        return pos;
+        return new PointF(hitbox.left, hitbox.top);
     }
+
 }

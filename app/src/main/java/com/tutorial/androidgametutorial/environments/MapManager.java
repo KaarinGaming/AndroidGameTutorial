@@ -51,29 +51,18 @@ public class MapManager {
     }
 
 
-    private void drawObjects(Canvas c) {
-        if (currentMap.getGameObjectArrayList() != null)
-            for (GameObject go : currentMap.getGameObjectArrayList())
-                c.drawBitmap(go.getObjectType().getObjectImg(), go.getHitbox().left + cameraX, go.getHitbox().top + cameraY, null);
-
+    public void drawObject(Canvas c, GameObject go) {
+        c.drawBitmap(go.getObjectType().getObjectImg(), go.getHitbox().left + cameraX, go.getHitbox().top + cameraY, null);
     }
 
-    public void drawBuildings(Canvas c) {
-        if (currentMap.getBuildingArrayList() != null)
-            for (Building b : currentMap.getBuildingArrayList())
-                c.drawBitmap(b.getBuildingType().getHouseImg(), b.getPos().x + cameraX, b.getPos().y + cameraY, null);
+    public void drawBuilding(Canvas c, Building b) {
+        c.drawBitmap(b.getBuildingType().getHouseImg(), b.getPos().x + cameraX, b.getPos().y + cameraY, null);
     }
 
     public void drawTiles(Canvas c) {
         for (int j = 0; j < currentMap.getArrayHeight(); j++)
             for (int i = 0; i < currentMap.getArrayWidth(); i++)
                 c.drawBitmap(currentMap.getFloorType().getSprite(currentMap.getSpriteID(i, j)), i * GameConstants.Sprite.SIZE + cameraX, j * GameConstants.Sprite.SIZE + cameraY, null);
-    }
-
-    public void draw(Canvas c) {
-        drawTiles(c);
-        drawBuildings(c);
-        drawObjects(c);
     }
 
 
@@ -144,7 +133,6 @@ public class MapManager {
         gameObjectArrayList.add(new GameObject(new PointF(200, 550), GameObjects.FROG_GREEN));
         gameObjectArrayList.add(new GameObject(new PointF(50, 50), GameObjects.BASKET_FULL_RED_FRUIT));
         gameObjectArrayList.add(new GameObject(new PointF(800, 800), GameObjects.OVEN_SNOW_YELLOW));
-
 
 
         insideMap = new GameMap(insideArray, Tiles.INSIDE, null, null, HelpMethods.GetSkeletonsRandomized(2, insideArray));

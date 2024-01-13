@@ -2,6 +2,7 @@ package com.tutorial.androidgametutorial.environments;
 
 
 import com.tutorial.androidgametutorial.entities.Building;
+import com.tutorial.androidgametutorial.entities.Entity;
 import com.tutorial.androidgametutorial.entities.GameObject;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
@@ -25,6 +26,30 @@ public class GameMap {
         this.gameObjectArrayList = gameObjectArrayList;
         this.skeletonArrayList = skeletonArrayList;
         this.doorwayArrayList = new ArrayList<>();
+    }
+
+    public Entity[] getDrawableList() {
+        Entity[] list = new Entity[getDrawableAmount()];
+        int i = 0;
+
+        for (Building b : buildingArrayList)
+            list[i++] = b;
+        for (Skeleton s : skeletonArrayList)
+            list[i++] = s;
+        for (GameObject go : gameObjectArrayList)
+            list[i++] = go;
+
+        return list;
+    }
+
+    private int getDrawableAmount() {
+        int amount = 0;
+        amount += buildingArrayList.size();
+        amount += gameObjectArrayList.size();
+        amount += skeletonArrayList.size();
+        amount++; //Player
+
+        return amount;
     }
 
     public void addDoorway(Doorway doorway) {
