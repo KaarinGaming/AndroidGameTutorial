@@ -5,50 +5,40 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 import com.tutorial.androidgametutorial.entities.Building;
+import com.tutorial.androidgametutorial.entities.GameObject;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.GameMap;
 import com.tutorial.androidgametutorial.environments.Tiles;
-import com.tutorial.androidgametutorial.main.Game;
+
 
 import java.util.ArrayList;
 
 public class HelpMethods {
 
-    public static void AddDoorwayToGameMap(GameMap gameMapLocatedIn, GameMap gameMapTarget, int buildingIndex) {
-        float houseX = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex).getPos().x;
-        float houseY = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex).getPos().y;
 
-        RectF hitbox = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex).getBuildingType().getHitboxDoorway();
-        Doorway doorway = new Doorway(new RectF(hitbox.left + houseX, hitbox.top + houseY, hitbox.right + houseX, hitbox.bottom + houseY), gameMapTarget);
-
-        gameMapLocatedIn.addDoorway(doorway);
-
-    }
-
-    public static RectF CreateHitboxForDoorway(GameMap gameMapLocatedIn, int buildingIndex) {
+    public static PointF CreatePointForDoorway(GameMap gameMapLocatedIn, int buildingIndex) {
         Building building = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex);
 
         float x = building.getPos().x;
         float y = building.getPos().y;
-        RectF hitbox = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex).getBuildingType().getHitboxDoorway();
+        PointF point = gameMapLocatedIn.getBuildingArrayList().get(buildingIndex).getBuildingType().getDoorwayPoint();
 
-        return new RectF(hitbox.left + x, hitbox.top + y, hitbox.right + x, hitbox.bottom + y);
+        return new PointF(point.x + x, point.y + y);
 
     }
 
-    public static RectF CreateHitboxForDoorway(int xTile, int yTile) {
+    public static PointF CreatePointForDoorway(int xTile, int yTile) {
         float x = xTile * GameConstants.Sprite.SIZE;
         float y = yTile * GameConstants.Sprite.SIZE;
 
-        return new RectF(x, y, x + GameConstants.Sprite.SIZE, y + GameConstants.Sprite.SIZE);
-
+        return new PointF(x + 1, y + 1);
     }
 
-    public static void ConnectTwoDoorways(GameMap gameMapOne, RectF hitboxOne, GameMap gameMapTwo, RectF hitboxTwo) {
+    public static void ConnectTwoDoorways(GameMap gameMapOne, PointF pointOne, GameMap gameMapTwo, PointF pointTwo) {
 
-        Doorway doorwayOne = new Doorway(hitboxOne, gameMapOne);
-        Doorway doorwayTwo = new Doorway(hitboxTwo, gameMapTwo);
+        Doorway doorwayOne = new Doorway(pointOne, gameMapOne);
+        Doorway doorwayTwo = new Doorway(pointTwo, gameMapTwo);
 
         doorwayOne.connectDoorway(doorwayTwo);
         doorwayTwo.connectDoorway(doorwayOne);
@@ -125,10 +115,24 @@ public class HelpMethods {
     }
 
     public static boolean CanWalkHereUpDown(RectF hitbox, float deltaY, float currentCameraX, GameMap gameMap) {
-        if (hitbox.top + deltaY < 0)
-            return false;
-        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight())
-            return false;
+        if (hitbox.top + deltaY < 0) return false;
+        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight()) return false;
+
+        if (gameMap.getGameObjectArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + currentCameraX, hitbox.top + deltaY, hitbox.right + currentCameraX, hitbox.bottom + deltaY);
+            for (GameObject go : gameMap.getGameObjectArrayList()) {
+                if (RectF.intersects(go.getHitbox(), tempHitbox))
+                    return false;
+            }
+        }
+
+        //Buildings
+        if (gameMap.getBuildingArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + currentCameraX, hitbox.top + deltaY, hitbox.right + currentCameraX, hitbox.bottom + deltaY);
+            for (Building b : gameMap.getBuildingArrayList())
+                if (RectF.intersects(b.getHitbox(), tempHitbox))
+                    return false;
+        }
 
         Point[] tileCords = GetTileCords(hitbox, currentCameraX, deltaY);
         int[] tileIds = GetTileIds(tileCords, gameMap);
@@ -137,10 +141,24 @@ public class HelpMethods {
     }
 
     public static boolean CanWalkHereLeftRight(RectF hitbox, float deltaX, float currentCameraY, GameMap gameMap) {
-        if (hitbox.left + deltaX < 0)
-            return false;
-        else if (hitbox.right + deltaX >= gameMap.getMapWidth())
-            return false;
+        if (hitbox.left + deltaX < 0) return false;
+        else if (hitbox.right + deltaX >= gameMap.getMapWidth()) return false;
+
+        if (gameMap.getGameObjectArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + deltaX, hitbox.top + currentCameraY, hitbox.right + deltaX, hitbox.bottom + currentCameraY);
+            for (GameObject go : gameMap.getGameObjectArrayList()) {
+                if (RectF.intersects(go.getHitbox(), tempHitbox))
+                    return false;
+            }
+        }
+
+        //Buildings
+        if (gameMap.getBuildingArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + deltaX, hitbox.top + currentCameraY, hitbox.right + deltaX, hitbox.bottom + currentCameraY);
+            for (Building b : gameMap.getBuildingArrayList())
+                if (RectF.intersects(b.getHitbox(), tempHitbox))
+                    return false;
+        }
 
         Point[] tileCords = GetTileCords(hitbox, deltaX, currentCameraY);
         int[] tileIds = GetTileIds(tileCords, gameMap);
@@ -150,18 +168,33 @@ public class HelpMethods {
 
 
     public static boolean CanWalkHere(RectF hitbox, float deltaX, float deltaY, GameMap gameMap) {
-        if (hitbox.left + deltaX < 0 || hitbox.top + deltaY < 0)
-            return false;
-        else if (hitbox.right + deltaX >= gameMap.getMapWidth())
-            return false;
-        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight())
-            return false;
+        if (hitbox.left + deltaX < 0 || hitbox.top + deltaY < 0) return false;
+        else if (hitbox.right + deltaX >= gameMap.getMapWidth()) return false;
+        else if (hitbox.bottom + deltaY >= gameMap.getMapHeight()) return false;
+
+        //Objects
+        if (gameMap.getGameObjectArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + deltaX, hitbox.top + deltaY, hitbox.right + deltaX, hitbox.bottom + deltaY);
+            for (GameObject go : gameMap.getGameObjectArrayList()) {
+                if (RectF.intersects(go.getHitbox(), tempHitbox))
+                    return false;
+            }
+        }
+
+        //Buildings
+        if (gameMap.getBuildingArrayList() != null) {
+            RectF tempHitbox = new RectF(hitbox.left + deltaX, hitbox.top + deltaY, hitbox.right + deltaX, hitbox.bottom + deltaY);
+            for (Building b : gameMap.getBuildingArrayList())
+                if (RectF.intersects(b.getHitbox(), tempHitbox))
+                    return false;
+        }
 
         Point[] tileCords = GetTileCords(hitbox, deltaX, deltaY);
         int[] tileIds = GetTileIds(tileCords, gameMap);
 
         return IsTilesWalkable(tileIds, gameMap.getFloorType());
     }
+
 
     private static int[] GetTileIds(Point[] tileCords, GameMap gameMap) {
         int[] tileIds = new int[4];
@@ -171,6 +204,7 @@ public class HelpMethods {
 
         return tileIds;
     }
+
 
     private static Point[] GetTileCords(RectF hitbox, float deltaX, float deltaY) {
         Point[] tileCords = new Point[4];

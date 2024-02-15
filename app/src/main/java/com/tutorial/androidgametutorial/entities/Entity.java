@@ -13,11 +13,6 @@ public abstract class Entity implements Comparable<Entity> {
         this.hitbox = new RectF(pos.x, pos.y, pos.x + width, pos.y + height);
     }
 
-    //For building only
-    public Entity(PointF pos) {
-        this.hitbox = new RectF(pos.x, pos.y, pos.x, pos.y);
-    }
-
     public void setActive(boolean active) {
         this.active = active;
     }

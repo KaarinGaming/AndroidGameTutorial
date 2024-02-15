@@ -52,11 +52,11 @@ public class MapManager {
 
 
     public void drawObject(Canvas c, GameObject go) {
-        c.drawBitmap(go.getObjectType().getObjectImg(), go.getHitbox().left + cameraX, go.getHitbox().top + cameraY, null);
+        c.drawBitmap(go.getObjectType().getObjectImg(), go.getHitbox().left + cameraX, go.getHitbox().top - go.getObjectType().getHitboxRoof() + cameraY, null);
     }
 
     public void drawBuilding(Canvas c, Building b) {
-        c.drawBitmap(b.getBuildingType().getHouseImg(), b.getPos().x + cameraX, b.getPos().y + cameraY, null);
+        c.drawBitmap(b.getBuildingType().getHouseImg(), b.getPos().x + cameraX, b.getPos().y - b.getBuildingType().getHitboxRoof() + cameraY, null);
     }
 
     public void drawTiles(Canvas c) {
@@ -77,8 +77,10 @@ public class MapManager {
     public void changeMap(Doorway doorwayTarget) {
         this.currentMap = doorwayTarget.getGameMapLocatedIn();
 
-        float cX = MainActivity.GAME_WIDTH / 2 - doorwayTarget.getPosOfDoorway().x;
-        float cY = MainActivity.GAME_HEIGHT / 2 - doorwayTarget.getPosOfDoorway().y;
+        float cX = MainActivity.GAME_WIDTH / 2f - doorwayTarget.getPosOfDoorway().x;
+        float cY = MainActivity.GAME_HEIGHT / 2f - doorwayTarget.getPosOfDoorway().y;
+
+        System.out.println();
 
         playing.setCameraValues(new PointF(cX, cY));
         cameraX = cX;
@@ -126,11 +128,11 @@ public class MapManager {
         buildingArrayList.add(new Building(new PointF(200, 200), Buildings.HOUSE_ONE));
 
         ArrayList<GameObject> gameObjectArrayList = new ArrayList<>();
-        gameObjectArrayList.add(new GameObject(new PointF(600, 200), GameObjects.PILLAR_YELLOW));
+//        gameObjectArrayList.add(new GameObject(new PointF(600, 200), GameObjects.PILLAR_YELLOW));
         gameObjectArrayList.add(new GameObject(new PointF(600, 400), GameObjects.STATUE_ANGRY_YELLOW));
         gameObjectArrayList.add(new GameObject(new PointF(1000, 400), GameObjects.STATUE_ANGRY_YELLOW));
-        gameObjectArrayList.add(new GameObject(new PointF(200, 350), GameObjects.FROG_YELLOW));
-        gameObjectArrayList.add(new GameObject(new PointF(200, 550), GameObjects.FROG_GREEN));
+//        gameObjectArrayList.add(new GameObject(new PointF(200, 350), GameObjects.FROG_YELLOW));
+//        gameObjectArrayList.add(new GameObject(new PointF(200, 550), GameObjects.FROG_GREEN));
         gameObjectArrayList.add(new GameObject(new PointF(50, 50), GameObjects.BASKET_FULL_RED_FRUIT));
         gameObjectArrayList.add(new GameObject(new PointF(800, 800), GameObjects.OVEN_SNOW_YELLOW));
 
@@ -142,9 +144,9 @@ public class MapManager {
 //        HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);
         HelpMethods.ConnectTwoDoorways(
                 outsideMap,
-                HelpMethods.CreateHitboxForDoorway(outsideMap, 0),
+                HelpMethods.CreatePointForDoorway(outsideMap, 0),
                 insideMap,
-                HelpMethods.CreateHitboxForDoorway(3, 6));
+                HelpMethods.CreatePointForDoorway(3, 6));
 
 
         currentMap = outsideMap;

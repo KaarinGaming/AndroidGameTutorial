@@ -7,7 +7,10 @@ public class Building extends Entity {
     private Buildings buildingType;
 
     public Building(PointF pos, Buildings buildingType) {
-        super(pos);
+        super(new PointF(pos.x, pos.y + buildingType.hitboxRoof),
+                buildingType.hitboxWidth,
+                buildingType.hitboxHeight
+        );
         this.buildingType = buildingType;
     }
 
