@@ -88,7 +88,7 @@ public class PlayingUI {
                     touchDown = true;
                 else if (checkInsideAttackBtn(eventPos)) {
                     if (attackBtnPointerId < 0) {
-                        playing.setAttacking(true);
+                        playing.getPlayer().setAttacking(true);
                         attackBtnPointerId = pointerId;
                     }
                 } else {
@@ -118,7 +118,7 @@ public class PlayingUI {
                         }
                     btnMenu.unPush(pointerId);
                     if (pointerId == attackBtnPointerId) {
-                        playing.setAttacking(false);
+                        playing.getPlayer().setAttacking(false);
                         attackBtnPointerId = -1;
                     }
                 }

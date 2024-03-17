@@ -5,7 +5,9 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 import com.tutorial.androidgametutorial.entities.Building;
+import com.tutorial.androidgametutorial.entities.Character;
 import com.tutorial.androidgametutorial.entities.GameObject;
+import com.tutorial.androidgametutorial.entities.Player;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.GameMap;
@@ -29,10 +31,15 @@ public class HelpMethods {
     }
 
     public static PointF CreatePointForDoorway(int xTile, int yTile) {
-        float x = xTile * GameConstants.Sprite.SIZE;
-        float y = yTile * GameConstants.Sprite.SIZE;
+//        float x = xTile * GameConstants.Sprite.SIZE;
+//        float y = yTile * GameConstants.Sprite.SIZE;
+//
+//        return new PointF(x + 1, y + 1);
 
-        return new PointF(x + 1, y + 1);
+        float x = xTile * GameConstants.Sprite.SIZE + GameConstants.Sprite.SIZE / 2f;
+        float y = yTile * GameConstants.Sprite.SIZE + GameConstants.Sprite.SIZE / 2f;
+
+        return new PointF(x, y);
     }
 
     public static void ConnectTwoDoorways(GameMap gameMapOne, PointF pointOne, GameMap gameMapTwo, PointF pointTwo) {
@@ -235,5 +242,14 @@ public class HelpMethods {
             return (tileId == 394 || tileId < 374);
 
         return true;
+    }
+
+    public static boolean IsPlayerCloseForAttack(Character character, Player player, float cameraY, float cameraX) {
+        float xDelta = character.getHitbox().left - (player.getHitbox().left - cameraX);
+        float yDelta = character.getHitbox().top - (player.getHitbox().top - cameraY);
+
+        float distance = (float) Math.hypot(xDelta, yDelta);
+
+        return distance < 200;
     }
 }

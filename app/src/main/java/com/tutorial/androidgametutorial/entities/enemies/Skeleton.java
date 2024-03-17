@@ -15,15 +15,48 @@ import java.util.Random;
 public class Skeleton extends Character {
     private long lastDirChange = System.currentTimeMillis();
     private Random rand = new Random();
+    private boolean moving = true, preparingAttack;
+    private long timerBeforeAttack, timerAttackDuration;
+    private long timeToAttack = 500, timeForAttackDuration = 250;
+
 
     public Skeleton(PointF pos) {
         super(pos, GameCharacters.SKELETON);
     }
 
     public void update(double delta, GameMap gameMap) {
-        updateMove(delta, gameMap);
-        updateAnimation();
+        if (moving) {
+            updateMove(delta, gameMap);
+            updateAnimation();
+        }
+        if (preparingAttack) {
+            checkTimeToAttackTimer();
+        }
+        if (attacking) {
+            updateAttackTimer();
+        }
+    }
 
+    public void prepareAttack() {
+        timerBeforeAttack = System.currentTimeMillis();
+        preparingAttack = true;
+        moving = false;
+    }
+
+    private void updateAttackTimer() {
+        if (timerAttackDuration + timeForAttackDuration < System.currentTimeMillis()) {
+            setAttacking(false);
+            resetAnimation();
+            moving = true;
+        }
+    }
+
+    private void checkTimeToAttackTimer() {
+        if (timerBeforeAttack + timeToAttack < System.currentTimeMillis()) {
+            setAttacking(true);
+            preparingAttack = false;
+            timerAttackDuration = System.currentTimeMillis();
+        }
     }
 
     private void updateMove(double delta, GameMap gameMap) {
@@ -57,5 +90,9 @@ public class Skeleton extends Character {
                 if (hitbox.left <= 0) faceDir = GameConstants.Face_Dir.RIGHT;
                 break;
         }
+    }
+
+    public boolean isPreparingAttack() {
+        return preparingAttack;
     }
 }

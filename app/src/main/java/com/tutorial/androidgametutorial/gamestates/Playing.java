@@ -27,8 +27,6 @@ import com.tutorial.androidgametutorial.helpers.interfaces.GameStateInterface;
 import com.tutorial.androidgametutorial.main.Game;
 import com.tutorial.androidgametutorial.ui.PlayingUI;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Playing extends BaseState implements GameStateInterface {
@@ -36,32 +34,21 @@ public class Playing extends BaseState implements GameStateInterface {
     private boolean movePlayer;
     private PointF lastTouchDiff;
     private MapManager mapManager;
-    //    private BuildingManager buildingManager;
     private Player player;
-//    private ArrayList<Skeleton> skeletons;
-
     private PlayingUI playingUI;
-
     private final Paint redPaint;
 
-    private RectF attackBox = null;
-
-    private boolean attacking, attackChecked;
-
     private boolean doorwayJustPassed;
-
     private Entity[] listOfDrawables;
     private boolean listOfEntitiesMade;
-
 
     public Playing(Game game) {
         super(game);
 
         mapManager = new MapManager(this);
         calcStartCameraValues();
-//        buildingManager = new BuildingManager();
+
         player = new Player();
-//        skeletons = new ArrayList<>();
 
         playingUI = new PlayingUI(this);
 
@@ -69,23 +56,13 @@ public class Playing extends BaseState implements GameStateInterface {
         redPaint.setStrokeWidth(1);
         redPaint.setStyle(Paint.Style.STROKE);
         redPaint.setColor(Color.RED);
-//
-//        for (int i = 0; i < 5; i++)
-//            spawnSkeleton();
-
-        updateWepHitbox();
-
     }
 
     private void calcStartCameraValues() {
-        cameraX = GAME_WIDTH / 2 - mapManager.getMaxWidthCurrentMap() / 2;
-        cameraY = GAME_HEIGHT / 2 - mapManager.getMaxHeightCurrentMap() / 2;
+        cameraX = GAME_WIDTH / 2f - mapManager.getMaxWidthCurrentMap() / 2f;
+        cameraY = GAME_HEIGHT / 2f - mapManager.getMaxHeightCurrentMap() / 2f;
     }
 
-//    public void spawnSkeleton() {
-//        skeletons.add(new Skeleton(new PointF(player.getHitbox().left - cameraX, player.getHitbox().top - cameraY)));
-//
-//    }
 
     @Override
     public void update(double delta) {
@@ -94,20 +71,32 @@ public class Playing extends BaseState implements GameStateInterface {
         player.update(delta, movePlayer);
         mapManager.setCameraValues(cameraX, cameraY);
         checkForDoorway();
-        updateWepHitbox();
 
-        if (attacking) if (!attackChecked) checkAttack();
+
+        if (player.isAttacking()) if (!player.isAttackChecked()) checkPlayerAttack();
 
 
         for (Skeleton skeleton : mapManager.getCurrentMap().getSkeletonArrayList())
-            if (skeleton.isActive()) skeleton.update(delta, mapManager.getCurrentMap());
+            if (skeleton.isActive()) {
+                skeleton.update(delta, mapManager.getCurrentMap());
+                if (skeleton.isAttacking()) {
+                    if (!skeleton.isAttackChecked()) {
+                        checkEnemyAttack(skeleton);
+                    }
+                } else if (!skeleton.isPreparingAttack()) {
+                    if (HelpMethods.IsPlayerCloseForAttack(skeleton, player, cameraY, cameraX)) {
+                        skeleton.prepareAttack();
+                    }
+                }
+            }
+
 
         sortArray();
 
     }
 
+
     private void buildEntityList() {
-        //TODO: will add check for this next episode
         listOfDrawables = mapManager.getCurrentMap().getDrawableList();
         listOfDrawables[listOfDrawables.length - 1] = player;
         listOfEntitiesMade = true;
@@ -136,9 +125,25 @@ public class Playing extends BaseState implements GameStateInterface {
         this.doorwayJustPassed = doorwayJustPassed;
     }
 
-    private void checkAttack() {
 
-        RectF attackBoxWithoutCamera = new RectF(attackBox);
+    private void checkEnemyAttack(Character character) {
+        character.updateWepHitbox();
+        RectF playerHitbox = new RectF(player.getHitbox());
+        playerHitbox.left -= cameraX;
+        playerHitbox.top -= cameraY;
+        playerHitbox.right -= cameraX;
+        playerHitbox.bottom -= cameraY;
+        if (RectF.intersects(character.getAttackBox(), playerHitbox)) {
+            System.out.println("Enemy Hit Player!");
+        } else {
+            System.out.println("Enemy Missed Player!");
+        }
+        character.setAttackChecked(true);
+    }
+
+    private void checkPlayerAttack() {
+
+        RectF attackBoxWithoutCamera = new RectF(player.getAttackBox());
         attackBoxWithoutCamera.left -= cameraX;
         attackBoxWithoutCamera.top -= cameraY;
         attackBoxWithoutCamera.right -= cameraX;
@@ -148,79 +153,15 @@ public class Playing extends BaseState implements GameStateInterface {
             if (attackBoxWithoutCamera.intersects(s.getHitbox().left, s.getHitbox().top, s.getHitbox().right, s.getHitbox().bottom))
                 s.setActive(false);
 
-        attackChecked = true;
-
+        player.setAttackChecked(true);
     }
 
-    private void updateWepHitbox() {
-        PointF pos = getWepPos();
-        float w = getWepWidth();
-        float h = getWepHeight();
-
-        attackBox = new RectF(pos.x, pos.y, pos.x + w, pos.y + h);
-    }
-
-    private float getWepWidth() {
-        //Must keep in mind, there is a rotation active
-        return switch (player.getFaceDir()) {
-
-            case GameConstants.Face_Dir.LEFT, GameConstants.Face_Dir.RIGHT ->
-                    Weapons.BIG_SWORD.getHeight();
-
-            case GameConstants.Face_Dir.UP, GameConstants.Face_Dir.DOWN ->
-                    Weapons.BIG_SWORD.getWidth();
-
-            default -> throw new IllegalStateException("Unexpected value: " + player.getFaceDir());
-        };
-    }
-
-    private float getWepHeight() {
-        //Must keep in mind, there is a rotation active
-        return switch (player.getFaceDir()) {
-
-            case GameConstants.Face_Dir.UP, GameConstants.Face_Dir.DOWN ->
-                    Weapons.BIG_SWORD.getHeight();
-
-            case GameConstants.Face_Dir.LEFT, GameConstants.Face_Dir.RIGHT ->
-                    Weapons.BIG_SWORD.getWidth();
-
-            default -> throw new IllegalStateException("Unexpected value: " + player.getFaceDir());
-        };
-    }
-
-    private PointF getWepPos() {
-        //Must keep in mind, there is a rotation active
-        return switch (player.getFaceDir()) {
-
-            case GameConstants.Face_Dir.UP ->
-                    new PointF(player.getHitbox().left - 0.5f * GameConstants.Sprite.SCALE_MULTIPLIER, player.getHitbox().top - Weapons.BIG_SWORD.getHeight() - Y_DRAW_OFFSET);
-
-            case GameConstants.Face_Dir.DOWN ->
-                    new PointF(player.getHitbox().left + 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER, player.getHitbox().bottom);
-
-            case GameConstants.Face_Dir.LEFT ->
-                    new PointF(player.getHitbox().left - Weapons.BIG_SWORD.getHeight() - X_DRAW_OFFSET, player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
-
-            case GameConstants.Face_Dir.RIGHT ->
-                    new PointF(player.getHitbox().right + X_DRAW_OFFSET, player.getHitbox().bottom - Weapons.BIG_SWORD.getWidth() - 0.75f * GameConstants.Sprite.SCALE_MULTIPLIER);
-
-            default -> throw new IllegalStateException("Unexpected value: " + player.getFaceDir());
-        };
-
-    }
 
     @Override
     public void render(Canvas c) {
         mapManager.drawTiles(c);
         if (listOfEntitiesMade)
             drawSortedEntities(c);
-
-//        buildingManager.draw(c);
-//        drawPlayer(c);
-
-//        for (Skeleton skeleton : mapManager.getCurrentMap().getSkeletonArrayList())
-//            if (skeleton.isActive()) drawCharacter(c, skeleton);
-
 
         playingUI.draw(c);
     }
@@ -242,56 +183,33 @@ public class Playing extends BaseState implements GameStateInterface {
 
     private void drawPlayer(Canvas c) {
         c.drawBitmap(Weapons.SHADOW.getWeaponImg(), player.getHitbox().left, player.getHitbox().bottom - 5 * GameConstants.Sprite.SCALE_MULTIPLIER, null);
-        c.drawBitmap(player.getGameCharType().getSprite(getAniIndex(), player.getFaceDir()), player.getHitbox().left - X_DRAW_OFFSET, player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET, null);
+        c.drawBitmap(player.getGameCharType().getSprite(player.getAniIndex(), player.getFaceDir()), player.getHitbox().left - X_DRAW_OFFSET, player.getHitbox().top - GameConstants.Sprite.Y_DRAW_OFFSET, null);
         c.drawRect(player.getHitbox(), redPaint);
-        if (attacking) drawWeapon(c);
+        if (player.isAttacking()) drawWeapon(c, player);
     }
 
-    private int getAniIndex() {
-        if (attacking) return 4;
-        return player.getAniIndex();
+
+    private void drawWeapon(Canvas c, Character character) {
+        c.rotate(character.getWepRot(), character.getAttackBox().left, character.getAttackBox().top);
+        c.drawBitmap(Weapons.BIG_SWORD.getWeaponImg(), character.getAttackBox().left + character.wepRotAdjustLeft(), character.getAttackBox().top + character.wepRotAdjustTop(), null);
+        c.rotate(character.getWepRot() * -1, character.getAttackBox().left, character.getAttackBox().top);
+        c.drawRect(character.getAttackBox(), redPaint);
     }
 
-    private void drawWeapon(Canvas c) {
-        c.rotate(getWepRot(), attackBox.left, attackBox.top);
-
-        c.drawBitmap(Weapons.BIG_SWORD.getWeaponImg(), attackBox.left + wepRotAdjustLeft(), attackBox.top + wepRotAdjustTop(), null);
-
-        c.rotate(getWepRot() * -1, attackBox.left, attackBox.top);
-
-        c.drawRect(attackBox, redPaint);
+    private void drawEnemyWeapon(Canvas c, Character character) {
+        c.rotate(character.getWepRot(), character.getAttackBox().left + cameraX, character.getAttackBox().top + cameraY);
+        c.drawBitmap(Weapons.BIG_SWORD.getWeaponImg(), character.getAttackBox().left + cameraX + character.wepRotAdjustLeft(), character.getAttackBox().top + cameraY + character.wepRotAdjustTop(), null);
+        c.rotate(character.getWepRot() * -1, character.getAttackBox().left + cameraX, character.getAttackBox().top + cameraY);
+//        c.drawRect(character.getAttackBox(), redPaint);
     }
 
-    private float wepRotAdjustTop() {
-        return switch (player.getFaceDir()) {
-            case GameConstants.Face_Dir.LEFT, GameConstants.Face_Dir.UP ->
-                    -Weapons.BIG_SWORD.getHeight();
-            default -> 0;
-        };
-    }
-
-    private float wepRotAdjustLeft() {
-        return switch (player.getFaceDir()) {
-            case GameConstants.Face_Dir.UP, GameConstants.Face_Dir.RIGHT ->
-                    -Weapons.BIG_SWORD.getWidth();
-            default -> 0;
-        };
-    }
-
-    private float getWepRot() {
-        return switch (player.getFaceDir()) {
-            case GameConstants.Face_Dir.LEFT -> 90;
-            case GameConstants.Face_Dir.UP -> 180;
-            case GameConstants.Face_Dir.RIGHT -> 270;
-            default -> 0;
-        };
-
-    }
 
     public void drawCharacter(Canvas canvas, Character c) {
         canvas.drawBitmap(Weapons.SHADOW.getWeaponImg(), c.getHitbox().left + cameraX, c.getHitbox().bottom - 5 * GameConstants.Sprite.SCALE_MULTIPLIER + cameraY, null);
         canvas.drawBitmap(c.getGameCharType().getSprite(c.getAniIndex(), c.getFaceDir()), c.getHitbox().left + cameraX - X_DRAW_OFFSET, c.getHitbox().top + cameraY - GameConstants.Sprite.Y_DRAW_OFFSET, null);
 //        canvas.drawRect(c.getHitbox().left + cameraX, c.getHitbox().top + cameraY, c.getHitbox().right + cameraX, c.getHitbox().bottom + cameraY, redPaint);
+        if (c.isAttacking())
+            drawEnemyWeapon(canvas, c);
     }
 
     private void updatePlayerMove(double delta) {
@@ -352,9 +270,7 @@ public class Playing extends BaseState implements GameStateInterface {
         playingUI.touchEvents(event);
     }
 
-
-    public void setAttacking(boolean attacking) {
-        this.attacking = attacking;
-        if (!attacking) attackChecked = false;
+    public Player getPlayer() {
+        return player;
     }
 }
