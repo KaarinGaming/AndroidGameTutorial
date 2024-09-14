@@ -8,6 +8,8 @@ import com.tutorial.androidgametutorial.entities.Building;
 import com.tutorial.androidgametutorial.entities.Buildings;
 import com.tutorial.androidgametutorial.entities.GameObject;
 import com.tutorial.androidgametutorial.entities.GameObjects;
+import com.tutorial.androidgametutorial.entities.items.Item;
+import com.tutorial.androidgametutorial.entities.items.Items;
 import com.tutorial.androidgametutorial.gamestates.Playing;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
 import com.tutorial.androidgametutorial.helpers.HelpMethods;
@@ -65,6 +67,9 @@ public class MapManager {
                 c.drawBitmap(currentMap.getFloorType().getSprite(currentMap.getSpriteID(i, j)), i * GameConstants.Sprite.SIZE + cameraX, j * GameConstants.Sprite.SIZE + cameraY, null);
     }
 
+    public void drawItem(Canvas c, Item item) {
+        c.drawBitmap(item.getItemType().getImage(), item.getHitbox().left + cameraX, item.getHitbox().top + cameraY, null);
+    }
 
     public Doorway isPlayerOnDoorway(RectF playerHitbox) {
         for (Doorway doorway : currentMap.getDoorwayArrayList())
@@ -154,12 +159,17 @@ public class MapManager {
         gameObjectArrayList.add(new GameObject(new PointF(620, 520), GameObjects.OVEN_SNOW_YELLOW));
 
 
+        ArrayList<Item> outsideItemArrayList = new ArrayList<>();
+        outsideItemArrayList.add(new Item(Items.FISH, new PointF(560, 560)));
+        outsideItemArrayList.add(new Item(Items.MEDIPACK, new PointF(200, 700)));
+        outsideItemArrayList.add(new Item(Items.EMPTY_POT, new PointF(300, 150)));
 
-        GameMap insideMap = new GameMap(insideArray, Tiles.INSIDE, null, null, HelpMethods.GetSkeletonsRandomized(2, insideArray));
-        GameMap insideFlatRoofHouseMap = new GameMap(insideFlatHouseArray, Tiles.INSIDE, null, null,null);
-        GameMap insideGreenRoofHouseMap = new GameMap(insideGreenRoofHouseArr, Tiles.INSIDE, null, null,null);
 
-        GameMap outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList, gameObjectArrayList, HelpMethods.GetSkeletonsRandomized(5, outsideArray));
+        GameMap insideMap = new GameMap(insideArray, Tiles.INSIDE, null, null, HelpMethods.GetSkeletonsRandomized(2, insideArray), null);
+        GameMap insideFlatRoofHouseMap = new GameMap(insideFlatHouseArray, Tiles.INSIDE, null, null, null, null);
+        GameMap insideGreenRoofHouseMap = new GameMap(insideGreenRoofHouseArr, Tiles.INSIDE, null, null, null, null);
+
+        GameMap outsideMap = new GameMap(outsideArray, Tiles.OUTSIDE, buildingArrayList, gameObjectArrayList, HelpMethods.GetSkeletonsRandomized(5, outsideArray), outsideItemArrayList);
 
 
 //        HelpMethods.AddDoorwayToGameMap(outsideMap, insideMap, 0);
@@ -180,8 +190,6 @@ public class MapManager {
                 HelpMethods.CreatePointForDoorway(outsideMap, 2),
                 insideGreenRoofHouseMap,
                 HelpMethods.CreatePointForDoorway(3, 6));
-
-
 
 
         currentMap = outsideMap;

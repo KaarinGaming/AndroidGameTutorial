@@ -19,6 +19,7 @@ import com.tutorial.androidgametutorial.entities.GameObject;
 import com.tutorial.androidgametutorial.entities.Player;
 import com.tutorial.androidgametutorial.entities.Weapons;
 import com.tutorial.androidgametutorial.entities.enemies.Skeleton;
+import com.tutorial.androidgametutorial.entities.items.Item;
 import com.tutorial.androidgametutorial.environments.Doorway;
 import com.tutorial.androidgametutorial.environments.MapManager;
 import com.tutorial.androidgametutorial.helpers.GameConstants;
@@ -208,6 +209,8 @@ public class Playing extends BaseState implements GameStateInterface {
                 mapManager.drawObject(c, gameObject);
             } else if (e instanceof Building building) {
                 mapManager.drawBuilding(c, building);
+            } else if (e instanceof Item item) {
+                mapManager.drawItem(c, item);
             } else if (e instanceof Player) {
                 drawPlayer(c);
             }
